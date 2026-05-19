@@ -18,14 +18,21 @@ python main.py parse --responses "responses.xlsx" --output parsed_points.csv
 Run clustering analysus on the coded data:
 
 ```
-python main.py cluster --coded "pathtocoded.xlsx" --taxonomy "pathtotaxonomy.xlsx" --output output --k N
+python main.py cluster --coded "pathtocoded.xlsx" --taxonomy "pathtotaxonomy.xlsx" --output output --k N --pcoa-k N
 ```
 
 NOTE: `--k N` argument is optional
 
-### Specifying K
+### Specifying K for hierarchical
 
 `--k N` is optional. If you pass it, hierarchical clustering will use that exact N clusters. If you leave it out, script picks K automatically using the silhouette score from KMeans, and hierarchical clustering reuses same K.
+
+### Specifying K for PCoA
+
+`--pcoa-k N`
+
+Same function as `--k N`, but for PCoA.
+
 
 ### Output
 

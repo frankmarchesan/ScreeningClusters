@@ -54,11 +54,12 @@ def cmd_cluster(args):
     print("computing Jaccard distances")
     dist = clustering.compute_distance(matrix)
 
-    print("running PCoA (3 dims)")
-    coords, var_explained = clustering.run_pcoa(dist, n_dims=3)
-    print(f"  variance explained: PCo1={var_explained[0]:.1f}%  "
-          f"PCo2={var_explained[1]:.1f}%  PCo3={var_explained[2]:.1f}%")
-    pcoa_df = pd.DataFrame(coords, index=matrix.index, columns=["PCo1", "PCo2", "PCo3"])
+    print(f"running PCoA ({args.pcoa_k} dims)")
+    coords, var_explained = clustering.run_pcoa(dist, n_dims=args.pcoa_k)
+    var_str = "  ".join(f"PCo{i+1}={v:.1f}%" for i, v in enumerate(var_explained))
+    print(f"  variance explained: {var_str}")
+    pcoa_cols = [f"PCo{i+1}" for i in range(coords.shape[1])]
+    pcoa_df = pd.DataFrame(coords, index=matrix.index, columns=pcoa_cols)
     pcoa_path = os.path.join(out_dir, "pcoa_coordinates.csv")
     pcoa_df.to_csv(pcoa_path, index_label="Participant #")
     print(f"  saved -> {pcoa_path}")
@@ -112,6 +113,8 @@ def main():
                       help="directory to write CSVs/PNGs into")
     p_cl.add_argument("--k", type=int, default=None,
                       help="override k for hierarchical clustering (defaults to KMeans best k)")
+    p_cl.add_argument("--pcoa-k", dest="pcoa_k", type=int, default=3,
+                      help="number of PCoA dimensions to compute (default 3, must be >= 3 for the 3D plot)")
     p_cl.set_defaults(func=cmd_cluster)
 
     args = p.parse_args()
