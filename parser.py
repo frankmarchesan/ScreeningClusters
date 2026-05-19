@@ -22,7 +22,7 @@ def parse_q1(text):
     # we just chop that off so it doesn't end up as point #1
     text = re.sub(r'^(?:I (?:object|refuse)|My concerns are).*?:\s*', '', text, flags=re.IGNORECASE)
 
-    # ---- numbered: "1." "1)" "#1." "1.)" etc.
+    #  numbered: "1." "1)" "#1." "1.)" etc.
     # this is the most common ChatGPT-ish format people paste in
     if re.search(r'(?:^|\n)\s*#?\d+(?:\.\)|[\.\)])\s?', text):
         parts = re.split(r'(?:^|\s)\s*#?\d+(?:\.\)|[\.\)])\s*', text)
@@ -30,14 +30,14 @@ def parse_q1(text):
         if len(parts) >= 2:
             return parts
 
-    # ---- asterisk bullets:  * thing
+    #  asterisk bullets:  * thing
     if re.search(r'(?:^|\n)\s*\*', text):
         parts = re.split(r'(?:^|\n)\s*\*\s*', text)
         parts = [s.strip() for s in parts if s.strip()]
         if len(parts) >= 2:
             return parts
 
-    # ---- hash bullets:  # thing
+    #  hash bullets:  # thing
     # the (?=[A-Za-z]) lookahead avoids matching "#1." which is handled above
     # lookahead reference: https://docs.python.org/3/library/re.html#regular-expression-syntax
     if re.search(r'(?:^|\n)\s*#\s?(?=[A-Za-z])', text):
@@ -46,26 +46,26 @@ def parse_q1(text):
         if len(parts) >= 2:
             return parts
 
-    # ---- dash bullets:  - thing
+    #  dash bullets:  - thing
     if re.search(r'(?:^|\n)\s*-\s?(?=\S)', text):
         parts = re.split(r'(?:^|\n)\s*-\s*', text)
         parts = [s.strip() for s in parts if s.strip()]
         if len(parts) >= 2:
             return parts
 
-    # ---- blank line between paragraphs
+    #  blank line between paragraphs
     if '\n\n' in text:
         parts = [s.strip() for s in text.split('\n\n') if s.strip()]
         if len(parts) >= 2:
             return parts
 
-    # ---- single newline
+    #  single newline
     if '\n' in text:
         parts = [s.strip() for s in text.split('\n') if s.strip()]
         if len(parts) >= 2:
             return parts
 
-    # ---- semicolons
+    #  semicolons
     # also strip "and " off the front of the next chunk so we don't get "and X"
     if ';' in text:
         parts = re.split(r'\s*;\s*', text)
@@ -73,7 +73,7 @@ def parse_q1(text):
         if len(parts) >= 2:
             return parts
 
-    # ---- periods (only if each chunk is short-ish so we don't shred a paragraph)
+    #  periods (only if each chunk is short-ish so we don't shred a paragraph)
     # TODO: 150 chars is a guess, might want to tune this later
     if text.count('.') >= 2:
         parts = re.split(r'\.\s+', text)
@@ -81,7 +81,7 @@ def parse_q1(text):
         if len(parts) >= 2 and all(len(p) < 150 for p in parts):
             return parts
 
-    # ---- commas (last resort, same length)
+    #  commas (last resort, same length)
     # see this SO answer about splitting on multiple delimiters:
     # https://stackoverflow.com/questions/4998629/split-string-with-multiple-delimiters-in-python
     if ',' in text:

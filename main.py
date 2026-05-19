@@ -38,7 +38,7 @@ def cmd_cluster(args):
 
     print(f"loading taxonomy: {args.taxonomy}")
     taxonomy = data_loader.load_taxonomy(args.taxonomy)
-    print(f"  {len(taxonomy)} grounds in taxonomy")
+    print(f"  {len(taxonomy)} codes in taxonomy")
 
     print(f"loading coded data: {args.coded}")
     coded = data_loader.load_coded(args.coded)
@@ -46,7 +46,7 @@ def cmd_cluster(args):
 
     print("building binary matrix")
     matrix = encoding.build_binary_matrix(coded, taxonomy)
-    print(f"  shape: {matrix.shape[0]} participants x {matrix.shape[1]} grounds")
+    print(f"  shape: {matrix.shape[0]} participants x {matrix.shape[1]} codes")
     matrix_path = os.path.join(out_dir, "binary_matrix.csv")
     matrix.to_csv(matrix_path, index_label="Participant #")
     print(f"  saved -> {matrix_path}")

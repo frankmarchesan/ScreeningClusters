@@ -28,7 +28,6 @@ def compute_distance(matrix):
 
 def run_pcoa(dist_matrix, n_dims=3):
     # Classical PCoA = double-center the squared distances, then eigendecompose.
-    # Good plain-English walkthrough:
     #   https://www.davidzeleny.net/anadat-r/doku.php/en:pcoa_nmds
     # The math (Gower 1966) lives behind a paywall but the steps are:
     #   1. D2 = squared distances
