@@ -20,24 +20,24 @@ def load_taxonomy(path):
 
 
 def load_coded(path):
-    # the coded workbook has a sheet called "Coding" with this shape:
-    #   Participant # | Point Index | Point | Code L1 | Code L2 | Code L3
+    # the coded workbook has a sheet called "Data" with this shape:
+    #   Participant # | Point Index | Objection Grounds | Code 1 | Code 2 | Code 3
     # we want it in long form: one row per (Participant #, Code).
-    df = pd.read_excel(path, sheet_name="Coding")
+    df = pd.read_excel(path, sheet_name="Data")
 
     rows = []
     for _, row in df.iterrows():
         pid = row["Participant #"]
-        point = row["Point"]
-        for layer in range(1, 4): # L1, L2, L3
-            ccol = f"Code L{layer}"
+        point = row["Objection Grounds"]
+        for layer in range(1, 4): # Code 1, 2, 3
+            ccol = f"Code {layer}"
             if ccol not in df.columns:
                 break
             code = row.get(ccol)
             if pd.notna(code) and str(code).strip():
                 rows.append({
                     "Participant #": pid,
-                    "Point": point,
+                    "Objection Grounds": point,
                     "Code": str(code).strip(),
                 })
 
