@@ -54,8 +54,8 @@ def cmd_cluster(args):
     print("computing Jaccard distances")
     dist = clustering.compute_distance(matrix)
 
-    print(f"running PCoA ({args.pcoa_k} dims)")
-    coords, var_explained = clustering.run_pcoa(dist, n_dims=args.pcoa_k)
+    print("running PCoA (3 dims)")
+    coords, var_explained = clustering.run_pcoa(dist)
     var_str = "  ".join(f"PCo{i+1}={v:.1f}%" for i, v in enumerate(var_explained))
     print(f"  variance explained: {var_str}")
     pcoa_cols = [f"PCo{i+1}" for i in range(coords.shape[1])]
@@ -64,9 +64,15 @@ def cmd_cluster(args):
     pcoa_df.to_csv(pcoa_path, index_label="Participant #")
     print(f"  saved -> {pcoa_path}")
 
-    print("running KMeans (silhouette picks k)")
-    km_labels, best_k, ks, inertias, sils = clustering.run_kmeans(coords)
-    print(f"  best k = {best_k}  (silhouette = {max(sils):.3f})")
+    if args.pcoa_k is not None:
+        print(f"running KMeans (k forced to {args.pcoa_k})")
+    else:
+        print("running KMeans (silhouette picks k)")
+    km_labels, best_k, ks, inertias, sils = clustering.run_kmeans(coords, k_override=args.pcoa_k)
+    if args.pcoa_k is not None:
+        print(f"  k = {best_k}")
+    else:
+        print(f"  best k = {best_k}  (silhouette = {max(sils):.3f})")
     km_df = pd.DataFrame({"Participant #": matrix.index, "Cluster": km_labels})
     km_df = km_df.sort_values("Cluster", kind="stable")
     km_path = os.path.join(out_dir, "kmeans_assignments.csv")
@@ -113,8 +119,8 @@ def main():
                       help="directory to write CSVs/PNGs into")
     p_cl.add_argument("--k", type=int, default=None,
                       help="override k for hierarchical clustering (defaults to KMeans best k)")
-    p_cl.add_argument("--pcoa-k", dest="pcoa_k", type=int, default=3,
-                      help="number of PCoA dimensions to compute (default 3, must be >= 3 for the 3D plot)")
+    p_cl.add_argument("--pcoa-k", dest="pcoa_k", type=int, default=None,
+                      help="override k for KMeans clustering shown on the PCoA plots (defaults to the silhouette-best k)")
     p_cl.set_defaults(func=cmd_cluster)
 
     args = p.parse_args()

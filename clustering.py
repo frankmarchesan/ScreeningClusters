@@ -61,7 +61,7 @@ def run_pcoa(dist_matrix, n_dims=3):
     return coords, var_explained
 
 
-def run_kmeans(coords, k_min=2, k_max=8, random_state=42):
+def run_kmeans(coords, k_min=2, k_max=8, random_state=42, k_override=None):
     # try a few values of k and pick the one with the best silhouette.
     # silhouette is between -1 and 1, higher = clusters are tighter and more separated.
     # explanation + plot:
@@ -85,8 +85,11 @@ def run_kmeans(coords, k_min=2, k_max=8, random_state=42):
         else:
             sils.append(-1.0)
 
-    best_k = ks[int(np.argmax(sils))]
-
+    if k_override is not None:
+        best_k = k_override
+    else:
+        best_k = ks[int(np.argmax(sils))]
+        
     # refit at the chosen k to get the final assignments
     km = KMeans(n_clusters=best_k, n_init=10, random_state=random_state)
     final_labels = km.fit_predict(coords) + 1  # +1 so clusters are 1-indexed, easier to read
