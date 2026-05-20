@@ -15,6 +15,7 @@ import parser as q1_parser   # avoid shadowing the stdlib "parser" module name
 import data_loader
 import encoding
 import clustering
+import subclustering
 import plotting
 
 
@@ -74,10 +75,29 @@ def cmd_cluster(args):
     else:
         print(f"  best k = {best_k}  (silhouette = {max(sils):.3f})")
     km_df = pd.DataFrame({"Participant #": matrix.index, "Cluster": km_labels})
-    km_df = km_df.sort_values("Cluster", kind="stable")
+    sub_labels = None
+    if args.pcoa_sub_k is not None:
+        print(f"running KMeans sub-clustering (sub_k={args.pcoa_sub_k})")
+        sub_labels = subclustering.run_kmeans_sub(coords, km_labels, args.pcoa_sub_k)
+        km_df["Subcluster"] = sub_labels
+    sort_cols = ["Cluster", "Subcluster"] if args.pcoa_sub_k is not None else ["Cluster"]
+    km_df = km_df.sort_values(sort_cols, kind="stable")
     km_path = os.path.join(out_dir, "kmeans_assignments.csv")
     km_df.to_csv(km_path, index=False)
     print(f"  saved -> {km_path}")
+
+    top_clusters = subclustering.top_codes(matrix, km_labels)
+    top_clusters_path = os.path.join(out_dir, "top_codes_clusters.csv")
+    top_clusters.to_csv(top_clusters_path, index=False)
+    print(f"  saved -> {top_clusters_path}")
+
+    composite = None
+    if sub_labels is not None:
+        composite = km_labels * 100 + sub_labels
+        top_sub = subclustering.top_codes(matrix, composite)
+        top_sub_path = os.path.join(out_dir, "top_codes_subclusters.csv")
+        top_sub.to_csv(top_sub_path, index=False)
+        print(f"  saved -> {top_sub_path}")
 
     # let user override the k used for hierarchical, otherwise use what KMeans picked
     hk = args.k if args.k else best_k
@@ -98,6 +118,8 @@ def cmd_cluster(args):
                                    os.path.join(out_dir, "elbow_silhouette.png"))
     plotting.plot_dendrogram(linkage_matrix,
                              os.path.join(out_dir, "dendrogram.png"))
+    if composite is not None:
+        plotting.plot_pcoa_2d(coords, composite, var_explained, os.path.join(out_dir, "pcoa_2d_subclusters.png"))
     print("done.")
 
 
@@ -121,6 +143,8 @@ def main():
                       help="override k for hierarchical clustering (defaults to KMeans best k)")
     p_cl.add_argument("--pcoa-k", dest="pcoa_k", type=int, default=None,
                       help="override k for KMeans clustering shown on the PCoA plots (defaults to the silhouette-best k)")
+    p_cl.add_argument("--pcoa-sub-k", dest="pcoa_sub_k", type=int, default=None,
+                      help="if set, run KMeans sub-clustering within each KMeans cluster (adds a Subcluster column)")
     p_cl.set_defaults(func=cmd_cluster)
 
     args = p.parse_args()

@@ -10,6 +10,7 @@
 #   StatQuest on PCA/PCoA:          https://www.youtube.com/watch?v=FgakZw6K1QQ
 
 import numpy as np
+import pandas as pd
 from scipy.spatial.distance import pdist, squareform
 from scipy.cluster.hierarchy import linkage, fcluster
 from sklearn.cluster import KMeans
@@ -113,3 +114,4 @@ def run_hierarchical(dist_matrix, k, method="complete"):
     # docs -> https://docs.scipy.org/doc/scipy/reference/generated/scipy.cluster.hierarchy.fcluster.html
     labels = fcluster(Z, t=k, criterion="maxclust")
     return labels, Z
+
