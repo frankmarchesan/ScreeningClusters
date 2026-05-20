@@ -22,7 +22,7 @@ def run_kmeans_sub(coords, parent_labels, sub_k, random_state=42):
     return sub
 
 
-def top_codes(matrix, labels, top_n=10):
+def top_codes(matrix, labels, top_n=3):
     # matrix: DataFrame (participants x codes), labels: array aligned to matrix.index.
     # returns long-form DataFrame: Group, Code, Count, Proportion, Group Size.
     labels = pd.Series(labels, index=matrix.index)

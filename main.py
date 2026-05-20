@@ -119,6 +119,8 @@ def cmd_cluster(args):
     plotting.plot_dendrogram(linkage_matrix,
                              os.path.join(out_dir, "dendrogram.png"))
     if composite is not None:
+                # TODO: swap to plotting.plot_pcoa_2d_subclusters(coords, km_labels, sub_labels, var_explained, path)
+        #       once that function is implemented  it uses parent hue + sub shading for visual clarity
         plotting.plot_pcoa_2d(coords, composite, var_explained, os.path.join(out_dir, "pcoa_2d_subclusters.png"))
     print("done.")
 

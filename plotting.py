@@ -9,6 +9,7 @@
 #   so it works on machines without a display (e.g. when running headless)
 #   https://matplotlib.org/stable/users/explain/figure/backends.html
 
+import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -73,6 +74,21 @@ def plot_elbow_silhouette(ks, inertias, sils, best_k, path):
     fig.savefig(path, dpi=200)
     plt.close(fig)
 
+# def plot_pcoa_2d_subclusters(coords, parent_labels, sub_labels, var_explained, path):
+#     parent cluster -> distinct hue from tab10.
+#     subclusters within a parent -> shades (light to saturated) of that hue,
+#     so parent grouping is readable at a glance AND subclusters within a parent
+#     are still distinguishable AND no two parents share similar shades.
+#
+#     1. set up figure/axes (same size as plot_pcoa_2d)
+#     2. for each parent cluster (in sorted order):
+#          - pick base color from tab10 by parent index
+#          - for each subcluster within that parent:
+#              - compute shade factor t in [0.4, 1.0] across subs
+#                (t=1 -> base color, t<1 -> mixed with white)
+#              - mask coords to (parent, sub), scatter with that color
+#              - label legend entry as "Cluster {p}.{s}"
+#     3. axes labels (PCo1/PCo2 with var explained), title, legend, save
 
 def plot_dendrogram(linkage_matrix, path, truncate=30):
     # the full dendrogram is unreadable with 200+ participants,

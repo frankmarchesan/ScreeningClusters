@@ -48,7 +48,7 @@ Cluster command writes these files into the output folder:
 * `pcoa_coordinates.csv`: 3D PCoA coordinates for each participant.
 * `kmeans_assignments.csv`: Participant # and KMeans cluster, sorted by cluster.
 * `hierarchical_assignments.csv`: Participant # and hierarchical cluster (complete linkage), sorted by cluster.
-* `top_codes_clusters.csv`: top 10 taxonomy codes per KMeans cluster (Group, Code, Count, Proportion, Group Size).
-* `top_codes_clusters.csv`: top 10 codes per subcluster. Group ids are composite (`parent*100 + sub`,e.g. `201` = cluster 2 / subcluster 1). Inly written when `--pcoa-sub-k` is passed.
+* `top_codes_clusters.csv`: top 3 taxonomy codes per KMeans cluster (Group, Code, Count, Proportion, Group Size).
+* `top_codes_clusters.csv`: top 3 codes per subcluster. Group ids are composite (`parent*100 + sub`,e.g. `201` = cluster 2 / subcluster 1). Inly written when `--pcoa-sub-k` is passed.
 * `pcoa_2d.png`, `pcoa_3d.png`, `elbow_silhouette.png`, `dendrogram.png`: plots.
 * `pcoa_2d_subclusters.png`: PCoA 2D scatter colored by subcluster. Only written when `--pcoa-sub-k` is passed
