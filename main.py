@@ -99,7 +99,7 @@ def cmd_cluster(args):
         top_sub.to_csv(top_sub_path, index=False)
         print(f"  saved -> {top_sub_path}")
 
-    # let user override the k used for hierarchical, otherwise use what KMeans picked
+    # allows to override the k used for hierarchical, otherwise use what KMeans picked
     hk = args.k if args.k else best_k
     print(f"running hierarchical clustering (complete linkage, k={hk})")
     hier_labels, linkage_matrix = clustering.run_hierarchical(dist, k=hk)
@@ -119,9 +119,8 @@ def cmd_cluster(args):
     plotting.plot_dendrogram(linkage_matrix,
                              os.path.join(out_dir, "dendrogram.png"))
     if composite is not None:
-                # TODO: swap to plotting.plot_pcoa_2d_subclusters(coords, km_labels, sub_labels, var_explained, path)
-        #       once that function is implemented  it uses parent hue + sub shading for visual clarity
-        plotting.plot_pcoa_2d(coords, composite, var_explained, os.path.join(out_dir, "pcoa_2d_subclusters.png"))
+        plotting.plot_pcoa_2d_subclusters(coords, km_labels, sub_labels, var_explained,
+                                           os.path.join(out_dir, "pcoa_2d_subclusters.png"))
     print("done.")
 
 

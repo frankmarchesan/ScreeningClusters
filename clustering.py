@@ -98,6 +98,13 @@ def run_kmeans(coords, k_min=2, k_max=8, random_state=42, k_override=None):
     return final_labels, best_k, ks, inertias, sils
 
 
+def kmeans_labels_for_ks(coords, ks, random_state=42):
+    # run KMeans at each k in `ks` and return {k: labels} (labels 1-indexed).
+    # used to build the "PCoA across k" grid plot. k<=1 -> everyone in one cluster.
+    # TODO: fill body
+    raise NotImplementedError
+
+
 def run_hierarchical(dist_matrix, k, method="complete"):
     # Why complete linkage? single linkage tends to make weird "chained" clusters
     # where everything ends up in one big blob. complete linkage merges based on the

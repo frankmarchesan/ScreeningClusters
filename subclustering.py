@@ -5,21 +5,18 @@
 import numpy as np
 import pandas as pd
 from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
 
 
-def run_kmeans_sub(coords, parent_labels, sub_k, random_state=42):
+def run_kmeans_sub(coords, parent_labels, sub_k=None, random_state=42, sub_k_max=6):
     # re-run KMeans within each parent cluster on the same PCoA coords.
-    # returns 1D array of sub-cluster labels (1-indexed *per parent*).
-    parent_labels = np.asarray(parent_labels)
-    sub = np.ones(len(parent_labels), dtype=int)
-    for c in np.unique(parent_labels):
-        idx = np.where(parent_labels == c)[0]
-        if len(idx) < sub_k or len(idx) < 2:
-            print(f"  cluster {c}: only {len(idx)} members, skipping sub-clustering")
-            continue
-        km = KMeans(n_clusters=sub_k, n_init=10, random_state=random_state)
-        sub[idx] = km.fit_predict(coords[idx]) + 1
-    return sub
+    # sub_k=None  -> each parent picks its OWN best sub-k by silhouette (more optimal:
+    #                tight clusters split less, messy ones split more, tiny ones not at all).
+    # sub_k=int   -> force that many sub-clusters in every parent (old behaviour).
+    # returns (sub, chosen): sub = 1D array of sub-cluster labels (1-indexed *per parent*),
+    #         chosen = {parent_label: number_of_subclusters_used}.
+    # TODO: fill body
+    raise NotImplementedError
 
 
 def top_codes(matrix, labels, top_n=3):

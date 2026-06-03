@@ -74,21 +74,44 @@ def plot_elbow_silhouette(ks, inertias, sils, best_k, path):
     fig.savefig(path, dpi=200)
     plt.close(fig)
 
-# def plot_pcoa_2d_subclusters(coords, parent_labels, sub_labels, var_explained, path):
+def plot_pcoa_2d_subclusters(coords, parent_labels, sub_labels, var_explained, path):
 #     parent cluster -> distinct hue from tab10.
 #     subclusters within a parent -> shades (light to saturated) of that hue,
 #     so parent grouping is readable at a glance AND subclusters within a parent
 #     are still distinguishable AND no two parents share similar shades.
-#
-#     1. set up figure/axes (same size as plot_pcoa_2d)
-#     2. for each parent cluster (in sorted order):
-#          - pick base color from tab10 by parent index
-#          - for each subcluster within that parent:
-#              - compute shade factor t in [0.4, 1.0] across subs
-#                (t=1 -> base color, t<1 -> mixed with white)
-#              - mask coords to (parent, sub), scatter with that color
-#              - label legend entry as "Cluster {p}.{s}"
-#     3. axes labels (PCo1/PCo2 with var explained), title, legend, save
+    parent_labels = np.asarray(parent_labels)
+    sub_labels = np.asarray(sub_labels)
+    base_cmap = plt.get_cmap("tab10")
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+    for p_idx, p in enumerate(sorted(np.unique(parent_labels))):
+        # pick base color from tab10 by parent index
+        base = np.array(base_cmap(p_idx % 10)[:3])
+        subs = sorted(np.unique(sub_labels[parent_labels == p]))
+        for s_idx, s in enumerate(subs):
+            # shade factor t in [0.4, 1.0]: t=1 -> base color, t<1 -> mixed with white
+            t = 1.0 if len(subs) == 1 else 0.4 + 0.6 * (s_idx / (len(subs) - 1))
+            color = tuple(base * t + (1 - t))
+            mask = (parent_labels == p) & (sub_labels == s)
+            ax.scatter(coords[mask, 0], coords[mask, 1],
+                       color=color, s=30, alpha=0.85,
+                       label=f"Cluster {p}.{s}")
+    ax.set_xlabel(f"PCo1 ({var_explained[0]:.1f}%)")
+    ax.set_ylabel(f"PCo2 ({var_explained[1]:.1f}%)")
+    ax.set_title("PCoA - 2D (parent = hue, subcluster = shade)")
+    ax.legend(loc="best", fontsize=8)
+    plt.tight_layout()
+    fig.savefig(path, dpi=200)
+    plt.close(fig)
+
+def plot_pcoa_k_grid(coords, k_to_labels, var_explained, path, ncols=4):
+    # one figure, one panel per k (k_to_labels maps k -> cluster labels).
+    # lays the panels out in a grid so all the k values can be compared side by side
+    # instead of flipping between separate PNGs.
+    # subplots grid -> https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html
+    # TODO: fill body
+    raise NotImplementedError
+
 
 def plot_dendrogram(linkage_matrix, path, truncate=30):
     # the full dendrogram is unreadable with 200+ participants,
